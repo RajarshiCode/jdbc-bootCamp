@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 import java.sql.*;
 
 
@@ -15,18 +17,40 @@ public class Main {
 
 
         try{
-
+            Scanner sc = new Scanner(System.in);
             Connection connection = DriverManager.getConnection(url,username,password);
-
+            String query = "insert into students(name, age, marks) values(?,?,?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+//            Statement statement = connection.createStatement();
 //            String query = "insert into students(name, age, marks) values(?,?,?)";
             //String query = "select marks from students where id = ?";
-            String query = "update students set age = ? where id= ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            //String query = "delete from students where id = ?";
-            // preparedStatement.setInt(1, 4); // id o. will get deleted.
-    //          preparedStatement.setInt(1,4);
-                preparedStatement.setInt(1,30);
-                preparedStatement.setInt(2,4);
+//            String query = "update students set age = ? where id= ?";
+            while(true)
+            {
+                System.out.print("Enter name : ");
+                String name = sc.next();
+                System.out.print("Enter age : ");
+                int age = sc.nextInt();
+                System.out.print("Enter marks : ");
+                double marks = sc.nextDouble();
+                System.out.print("Enter more data ? (Y/N) ");
+                String choice = sc.next();
+                //String query = String.format("insert into students(name, age, marks) values('%s', %o, %f)", name, age, marks);
+                //String query = "insert into students(name, age, marks) values(?,?,?)";
+                preparedStatement.setString(1,name);
+                preparedStatement.setInt(2,age);
+                preparedStatement.setDouble(3,marks);
+                preparedStatement.addBatch();
+                if(choice.equalsIgnoreCase("N"))
+                    break;
+            }
+
+//            PreparedStatement preparedStatement = connection.prepareStatement(query);
+//            //String query = "delete from students where id = ?";
+//            // preparedStatement.setInt(1, 4); // id o. will get deleted.
+//    //          preparedStatement.setInt(1,4);
+//                preparedStatement.setInt(1,30);
+//                preparedStatement.setInt(2,4);
 
 //            preparedStatement.setString(1, "Archisman");
 //            preparedStatement.setInt(2, 24);
@@ -51,11 +75,16 @@ public class Main {
 
 
 
-            int rowsAffected = preparedStatement.executeUpdate();
-            if(rowsAffected>0)
-                System.out.println("Data Inserted!");
-            else
-                System.out.println("Data Not Inserted!");
+            int[] arr =preparedStatement.executeBatch();
+            for(int i = 0; i<arr.length; i++)
+            {
+                if(arr[i] == 0)
+                    System.out.println("Query " + i + "not executed Sucessfully");
+            }
+//            if(arr>0)
+//                System.out.println("Data Inserted!");
+//            else
+//                System.out.println("Data Not Inserted!");
 //            while(resultSet.next()){
 //                int id = resultSet.getInt("id");
 //                String name = resultSet.getString("name");;
